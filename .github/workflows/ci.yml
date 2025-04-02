@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: yarn Install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn run test:run
+
+      - name: Run TypeScript type checking
+        run: yarn run type-check
+
+      - name: Run ESLint and fix
+        run: yarn run lint:fix
+
+      - name: Format with Prettier
+        run: yarn run format
+
+      - name: Check for remaining ESLint errors
+        run: yarn run lint
+
+      - name: Check for remaining formatting issues
+        run: yarn run format:check
